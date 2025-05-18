@@ -38,7 +38,7 @@ fig = go.Figure(data=[
 fig.update_layout(
     annotations=[
         dict(
-            text=f"<b>{remaining} cal<br>left</b>",
+            text=f"<b>{remaining} / {DAILY_CALORIE_GOAL}</b>",
             font_size=20,
             showarrow=False
         )
