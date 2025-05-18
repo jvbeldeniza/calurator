@@ -1,4 +1,5 @@
 import streamlit as st
+from ultralytics import YOLO
 from PIL import Image
 import cv2
 import numpy as np
@@ -10,12 +11,6 @@ picture = st.camera_input("Take a picture of your meal")
 if picture:
     img = Image.open(picture)
     st.image(img, caption="Captured Meal", use_container_width=True)
-
-
-import streamlit as st
-from ultralytics import YOLO
-from PIL import Image
-import numpy as np
 
 st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
 
