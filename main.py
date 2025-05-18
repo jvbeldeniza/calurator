@@ -13,29 +13,39 @@ st.title("📊 Dashboard")
 
 DAILY_CALORIE_GOAL = 2000
 
+# Load logged data
 df = pd.DataFrame(st.session_state.get("food_log", []))
 total_calories = df["Calories"].sum() if not df.empty else 0
 remaining = max(0, DAILY_CALORIE_GOAL - total_calories)
 
-# Show metric and linear progress bar
-st.metric("Remaining Calories", f"{remaining} cal")
-st.progress(min(total_calories / DAILY_CALORIE_GOAL, 1.0))
+# Calculate progress percentage
+progress_pct = min(total_calories / DAILY_CALORIE_GOAL, 1.0) * 100
 
-# Add donut (PI progress) chart
+# Donut chart with center annotation
 fig = go.Figure(data=[
     go.Pie(
         values=[total_calories, remaining],
         labels=["Consumed", "Remaining"],
         hole=0.7,
-        marker_colors=["#787878", "#FFFFFF"],
-        textinfo="none"
+        marker_colors=["#FF6961", "#90EE90"],
+        textinfo="none",
+        sort=False,
+        direction='clockwise'
     )
 ])
 
+# Add text in the center of the donut
 fig.update_layout(
+    annotations=[
+        dict(
+            text=f"<b>{remaining} cal<br>left</b>",
+            font_size=20,
+            showarrow=False
+        )
+    ],
     showlegend=True,
-    height=300,
-    margin=dict(t=10, b=10, l=10, r=10),
+    height=350,
+    margin=dict(t=30, b=10, l=10, r=10),
 )
 
 st.plotly_chart(fig, use_container_width=True)
