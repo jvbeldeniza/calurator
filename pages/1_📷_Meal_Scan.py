@@ -81,4 +81,12 @@ if img_file:
     # Show the final table
     st.dataframe(filtered_df.set_index("Food"))
 
+    if 'food_log' not in st.session_state:
+        st.session_state.food_log = []
+
+    for _, row in filtered_df.iterrows():
+        entry = {"Food": row["Food"], "Calories": int(row["Calories (kcal)"])}
+        if entry not in st.session_state.food_log:
+            st.session_state.food_log.append(entry)
+
     
