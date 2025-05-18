@@ -2,6 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 
+# Always use the sidebar
+with st.sidebar:
+    st.header("Navigation")
+    st.page_link("main.py", label="🏠 Home")
+    st.page_link("pages/1_Meal_Scan.py", label="📷 Meal Scan")
+    st.page_link("pages/2_Log_Food.py", label="📝 Log Food")
+    st.page_link("pages/3_Dashboard.py", label="📊 Dashboard")
 
 st.set_page_config(page_title="Food Tracker", page_icon="🍽️")
 
