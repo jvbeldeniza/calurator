@@ -49,7 +49,7 @@ nutrition_data = {
 
 df_nutrition = pd.DataFrame(nutrition_data)
 
-for food in detected:
+for food in detected[0]:
     row = df_nutrition[df_nutrition["Food"] == food]
     if not row.empty:
         st.write(f"**🍽️ {food}**")
