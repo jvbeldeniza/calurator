@@ -3,6 +3,7 @@ from ultralytics import YOLO
 from PIL import Image
 import cv2
 import numpy as np
+st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
 
 st.title("📷 Meal Scan")
 
@@ -12,7 +13,7 @@ if picture:
     img = Image.open(picture)
     st.image(img, caption="Captured Meal", use_container_width=True)
 
-st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
+
 
 st.title("📷 Meal Detection")
 
