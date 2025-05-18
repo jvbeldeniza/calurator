@@ -9,4 +9,4 @@ picture = st.camera_input("Take a picture of your meal")
 
 if picture:
     img = Image.open(picture)
-    st.image(img, caption="Captured Meal", use_column_width=True)
+    st.image(img, caption="Captured Meal", use_container_width=True)
