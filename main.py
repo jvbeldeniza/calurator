@@ -20,7 +20,7 @@ remaining = max(0, DAILY_CALORIE_GOAL - total_calories)
 
 # Calculate progress percentage
 progress_pct = min(total_calories / DAILY_CALORIE_GOAL, 1.0) * 100
-st.markdown("Calories")
+st.markdown("<b>Calories</b>")
 st.markdown(f"Remaining: {remaining}")
 # Donut chart with center annotation
 fig = go.Figure(data=[
