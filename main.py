@@ -54,3 +54,7 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
 st.markdown(f"Consumed: {total_calories}")
+
+st.markdown("History")
+
+st.dataframe(df)
