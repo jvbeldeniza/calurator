@@ -2,3 +2,4 @@ plotly
 opencv-python-headless
 numpy
 ultralytics
+pandas
