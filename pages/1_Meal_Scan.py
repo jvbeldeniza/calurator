@@ -50,7 +50,7 @@ if img_file:
 
     # Nutrition info
     nutrition_data = {
-        "Food": ["Chicken", "Rice", "Broccoli", "Egg", "Apple", "Milk"],
+        "Food": ["Chicken", "JFC - Burger Steak", "Broccoli", "Egg", "Apple", "Milk"],
         "Calories (kcal)": [165, 130, 55, 155, 52, 42],
         "Protein (g)": [31, 2.7, 3.7, 13, 0.3, 3.4],
         "Fat (g)": [3.6, 0.3, 0.6, 11, 0.2, 1.0],
