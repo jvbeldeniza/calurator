@@ -57,4 +57,4 @@ st.markdown(f"Consumed: {total_calories}")
 
 st.markdown("History")
 
-st.dataframe(df.reset_index(drop=True))
+st.dataframe(df, hide_index=True)
