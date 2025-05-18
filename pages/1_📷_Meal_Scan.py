@@ -4,10 +4,7 @@ from ultralytics import YOLO
 from PIL import Image
 import cv2
 import numpy as np
-
 import pandas as pd
-
-st.title("📷 Meal Detection")1
 st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
 
 st.title("📷 Meal Detection")
@@ -21,9 +18,7 @@ def load_model():
 model = load_model()
 
 # Upload or take a photo
-img_file = st.camera_input("Take a photo") or st.file_uploader(
-    "Or upload a meal image", type=["jpg", "jpeg", "png"]
-)
+img_file = st.camera_input("Take a photo") or st.file_uploader("Or upload a meal image", type=["jpg", "jpeg", "png"])
 
 if img_file:
     image = Image.open(img_file).convert("RGB")
@@ -61,31 +56,37 @@ if img_file:
         "Fat (g)": [3.6, 0.3, 0.6, 11, 0.2, 1.0],
         "Carbs (g)": [0, 28, 11.2, 1.1, 14, 5]
     }
+
     df_nutrition = pd.DataFrame(nutrition_data)
 
     st.write("### 🍽️ Nutrition Info (per 100g)")
 
-    filtered_df = df_nutrition[df_nutrition["Food"].isin(detected)].copy() # Make a copy to avoid SettingWithCopyWarning
+    # for food in detected:
+    #     row = df_nutrition[df_nutrition["Food"] == food]
+    #     if not row.empty:
+    #         st.write(f"**{food}**")
+    #         st.write(f"- Calories: {int(row['Calories (kcal)'].values[0])} kcal")
+    #         st.write(f"- Protein: {row['Protein (g)'].values[0]} g")
+    #         st.write(f"- Fat: {row['Fat (g)'].values[0]} g")
+    #         st.write(f"- Carbs: {row['Carbs (g)'].values[0]} g")
+    #         st.markdown("---")
+    #     else:
+    #         st.warning(f"Nutritional data for **{food}** not found.")
+    filtered_df = df_nutrition[df_nutrition["Food"].isin(detected)]
 
     # Optional: Reorder rows to match detection order
     filtered_df["Detection Order"] = filtered_df["Food"].apply(lambda x: detected.index(x))
-    filtered_df = filtered_df.sort_values("Detection Order").drop(
-        columns="Detection Order"
-    )
+    filtered_df = filtered_df.sort_values("Detection Order").drop(columns="Detection Order")
 
-    # Make the dataframe editable
-    edited_df = st.data_editor(filtered_df, num_rows="dynamic") # Changed to st.data_editor
-
-    # Store the edited DataFrame
-    st.session_state.edited_df = edited_df
+    # Show the final table
+    st.dataframe(filtered_df.set_index("Food"))
 
     if 'food_log' not in st.session_state:
         st.session_state.food_log = []
 
-    for _, row in edited_df.iterrows(): # Use edited_df
-        entry = {
-            "Food": row["Food"],
-            "Calories": int(row["Calories (kcal)"]),
-        }
+    for _, row in filtered_df.iterrows():
+        entry = {"Food": row["Food"], "Calories": int(row["Calories (kcal)"])}
         if entry not in st.session_state.food_log:
             st.session_state.food_log.append(entry)
+
+    
