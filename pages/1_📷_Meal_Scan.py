@@ -78,15 +78,20 @@ if img_file:
     filtered_df["Detection Order"] = filtered_df["Food"].apply(lambda x: detected.index(x))
     filtered_df = filtered_df.sort_values("Detection Order").drop(columns="Detection Order")
 
-    # Show the final table
-    st.dataframe(filtered_df.set_index("Food"))
-
     if 'food_log' not in st.session_state:
         st.session_state.food_log = []
 
-    for _, row in filtered_df.iterrows():
+    # Editable table
+    edited_df = st.data_editor(
+        filtered_df.set_index("Food"),
+        num_rows="dynamic",
+        use_container_width=True
+    )
+
+    # Update session_state food_log after edits
+    st.session_state.food_log = []
+    for _, row in edited_df.reset_index().iterrows():
         entry = {"Food": row["Food"], "Calories": int(row["Calories (kcal)"])}
-        if entry not in st.session_state.food_log:
-            st.session_state.food_log.append(entry)
+        st.session_state.food_log.append(entry)
 
     
