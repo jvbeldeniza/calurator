@@ -27,7 +27,7 @@ fig = go.Figure(data=[
         values=[total_calories, remaining],
         labels=["Consumed", "Remaining"],
         hole=0.7,
-        marker_colors=["#FF6961", "#90EE90"],
+        marker_colors=["#787878", "#FFFFFF"],
         textinfo="none"
     )
 ])
