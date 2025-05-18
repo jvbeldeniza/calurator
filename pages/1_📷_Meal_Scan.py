@@ -20,7 +20,6 @@ img_file = st.camera_input("Take a photo") or st.file_uploader("Or upload a meal
 
 if img_file:
     image = Image.open(img_file).convert("RGB")
-    st.image(image, caption="Input Image", use_container_width=True)
 
     # Run YOLO prediction
     results = model.predict(image,conf=0.25)
@@ -34,4 +33,7 @@ if img_file:
     # Optionally list detected classes
     classes = results[0].names
     detected = [classes[int(cls)] for cls in boxes.cls]
-    st.write("Detected objects:", detected)
+
+    st.write("### Detected Objects:")
+    for i, label in enumerate(detected, start=1):
+        st.write(f"{i}. {label}")
