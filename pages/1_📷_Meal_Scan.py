@@ -23,7 +23,7 @@ if img_file:
     st.image(image, caption="Input Image", use_container_width=True)
 
     # Run YOLO prediction
-    results = model.predict(image)
+    results = model.predict(image,conf=0.25)
 
     # Show results
     boxes = results[0].boxes
