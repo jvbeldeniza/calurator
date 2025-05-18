@@ -44,8 +44,6 @@ if img_file:
     # Show image with bounding boxes overlaid
     st.image(image_drawn, caption="Image with Bounding Boxes", use_container_width=True)
 
-🔍 Notes
-
     # Detected classes
     classes = results[0].names
     detected = [classes[int(cls)] for cls in boxes.cls]
