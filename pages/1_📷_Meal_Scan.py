@@ -29,7 +29,7 @@ if img_file:
     boxes = results[0].boxes
     img_with_boxes = results[0].plot()  # NumPy array
 
-    st.image(img_with_boxes, caption="Detection Result", use_column_width=True)
+    st.image(img_with_boxes, caption="Detection Result", use_container_width=True)
 
     # Detected classes
     classes = results[0].names
