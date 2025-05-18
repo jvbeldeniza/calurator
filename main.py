@@ -49,3 +49,5 @@ fig.update_layout(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+st.markdown("Base Goal: {DAILY_CALORIE_GOAL}")
+st.markdown("Consumed: {remaining}")
