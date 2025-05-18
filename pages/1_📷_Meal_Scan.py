@@ -20,7 +20,7 @@ img_file = st.camera_input("Take a photo") or st.file_uploader("Or upload a meal
 
 if img_file:
     image = Image.open(img_file).convert("RGB")
-    st.image(image, caption="Input Image", use_column_width=True)
+    st.image(image, caption="Input Image", use_container_width=True)
 
     # Run YOLO prediction
     results = model.predict(image)
