@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import ImageDraw, ImageFont
 from ultralytics import YOLO
 from PIL import Image
 import cv2
@@ -25,11 +26,25 @@ if img_file:
     # Run YOLO prediction
     results = model.predict(image, conf=0.25)
 
-    # Show results
-    boxes = results[0].boxes
-    img_with_boxes = results[0].plot()  # NumPy array
+    image_drawn = image.copy()
+    draw = ImageDraw.Draw(image_drawn)
 
-    st.image(img_with_boxes, caption="Detection Result", use_container_width=True)
+    # Load bounding box info
+    boxes = results[0].boxes
+    coords = boxes.xyxy.cpu().numpy()
+    classes = results[0].names
+    detected = [classes[int(cls)] for cls in boxes.cls]
+
+    # Draw bounding boxes and labels
+    for (x1, y1, x2, y2), cls_id in zip(coords, boxes.cls):
+        label = classes[int(cls_id)]
+        draw.rectangle([x1, y1, x2, y2], outline="red", width=3)
+        draw.text((x1, y1 - 10), label, fill="red")
+
+    # Show image with bounding boxes overlaid
+    st.image(image_drawn, caption="Image with Bounding Boxes", use_container_width=True)
+
+🔍 Notes
 
     # Detected classes
     classes = results[0].names
