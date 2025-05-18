@@ -5,16 +5,6 @@ import cv2
 import numpy as np
 st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
 
-st.title("📷 Meal Scan")
-
-picture = st.camera_input("Take a picture of your meal")
-
-if picture:
-    img = Image.open(picture)
-    st.image(img, caption="Captured Meal", use_container_width=True)
-
-
-
 st.title("📷 Meal Detection")
 
 # Load YOLO model
