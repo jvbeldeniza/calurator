@@ -35,10 +35,6 @@ if img_file:
     classes = results[0].names
     detected = [classes[int(cls)] for cls in boxes.cls]
 
-    st.write("### Detected Objects:")
-    for i, label in enumerate(detected, start=1):
-        st.write(f"{i}. {label}")
-
     # Nutrition info
     nutrition_data = {
         "Food": ["Chicken", "Rice", "Broccoli", "Egg", "Apple", "Milk"],
