@@ -27,7 +27,7 @@ fig = go.Figure(data=[
         values=[total_calories, remaining],
         labels=["Consumed", "Remaining"],
         hole=0.7,
-        marker_colors=["#FF6961", "#90EE90"],
+        marker_colors=["#181818", "#FFFFFF"],
         textinfo="none",
         sort=False,
         direction='clockwise'
@@ -50,4 +50,4 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
-st.markdown(f"Consumed: {remaining}")
+st.markdown(f"Consumed: {total_calories}")
