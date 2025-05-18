@@ -59,7 +59,7 @@ if img_file:
 
     df_nutrition = pd.DataFrame(nutrition_data)
 
-    st.write("### 🍽️ Nutrition Info (per 100g)")
+    st.write("### 🍽️ Nutrition Info")
 
     # for food in detected:
     #     row = df_nutrition[df_nutrition["Food"] == food]
@@ -89,7 +89,7 @@ if img_file:
     )
 
     # Update session_state food_log after edits
-    st.session_state.food_log = []
+    
     for _, row in edited_df.reset_index().iterrows():
         entry = {"Food": row["Food"], "Calories": int(row["Calories (kcal)"])}
         st.session_state.food_log.append(entry)
