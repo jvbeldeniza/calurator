@@ -42,7 +42,7 @@ if img_file:
         draw.text((x1, y1 - 10), label, fill="red")
 
     # Show image with bounding boxes overlaid
-    st.image(image_drawn, caption="Image with Bounding Boxes", use_container_width=True)
+    st.image(image_drawn, use_container_width=True)
 
     # Detected classes
     classes = results[0].names
