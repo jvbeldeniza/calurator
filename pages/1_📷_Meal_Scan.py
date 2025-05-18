@@ -61,14 +61,24 @@ if img_file:
 
     st.write("### 🍽️ Nutrition Info (per 100g)")
 
-    for food in detected:
-        row = df_nutrition[df_nutrition["Food"] == food]
-        if not row.empty:
-            st.write(f"**{food}**")
-            st.write(f"- Calories: {int(row['Calories (kcal)'].values[0])} kcal")
-            st.write(f"- Protein: {row['Protein (g)'].values[0]} g")
-            st.write(f"- Fat: {row['Fat (g)'].values[0]} g")
-            st.write(f"- Carbs: {row['Carbs (g)'].values[0]} g")
-            st.markdown("---")
-        else:
-            st.warning(f"Nutritional data for **{food}** not found.")
+    # for food in detected:
+    #     row = df_nutrition[df_nutrition["Food"] == food]
+    #     if not row.empty:
+    #         st.write(f"**{food}**")
+    #         st.write(f"- Calories: {int(row['Calories (kcal)'].values[0])} kcal")
+    #         st.write(f"- Protein: {row['Protein (g)'].values[0]} g")
+    #         st.write(f"- Fat: {row['Fat (g)'].values[0]} g")
+    #         st.write(f"- Carbs: {row['Carbs (g)'].values[0]} g")
+    #         st.markdown("---")
+    #     else:
+    #         st.warning(f"Nutritional data for **{food}** not found.")
+    filtered_df = df_nutrition[df_nutrition["Food"].isin(detected)]
+
+    # Optional: Reorder rows to match detection order
+    filtered_df["Detection Order"] = filtered_df["Food"].apply(lambda x: detected.index(x))
+    filtered_df = filtered_df.sort_values("Detection Order").drop(columns="Detection Order")
+
+    # Show the final table
+    st.dataframe(filtered_df.set_index("Food"))
+
+    
