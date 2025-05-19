@@ -5,6 +5,11 @@ from PIL import Image
 import cv2
 import numpy as np
 import pandas as pd
+from sentence_transformers import SentenceTransformer
+from transformers import pipeline
+import faiss
+import numpy as np
+
 st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
 
 st.title("📷 Meal Detection")
@@ -61,17 +66,53 @@ if img_file:
 
     st.write("### 🍽️ Nutrition Info")
 
-    # for food in detected:
-    #     row = df_nutrition[df_nutrition["Food"] == food]
-    #     if not row.empty:
-    #         st.write(f"**{food}**")
-    #         st.write(f"- Calories: {int(row['Calories (kcal)'].values[0])} kcal")
-    #         st.write(f"- Protein: {row['Protein (g)'].values[0]} g")
-    #         st.write(f"- Fat: {row['Fat (g)'].values[0]} g")
-    #         st.write(f"- Carbs: {row['Carbs (g)'].values[0]} g")
-    #         st.markdown("---")
-    #     else:
-    #         st.warning(f"Nutritional data for **{food}** not found.")
+    # RAG--------------------------------------------
+
+    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    # Sample nutrition facts
+    texts = [
+        "Avocado is rich in healthy fats and contains nearly 20 vitamins and minerals.",
+        "Chicken breast is a great source of lean protein.",
+        "Quinoa is a high-protein grain suitable for gluten-free diets.",
+        "Carrots are high in beta-carotene, fiber, and antioxidants.",
+        "Chicken Joy has 620 calories."
+    ]
+
+    # Generate embeddings
+    embeddings = embedding_model.encode(texts)
+
+    # Create FAISS index
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(np.array(embeddings))
+
+    # Store docs for retrieval
+    def get_top_k(query, k=2):
+        query_vec = embedding_model.encode([query])
+        D, I = index.search(query_vec, k)
+        return [texts[i] for i in I[0]]
+    
+    qa_pipeline = pipeline("text-generation", model="sshleifer/tiny-gpt2", max_new_tokens=50)
+
+    def generate_answer(context, query):
+        prompt = f"Context: {context}\nQuestion: {query}\nAnswer:"
+        output = qa_pipeline(prompt, do_sample=False)[0]["generated_text"]
+        return output.split("Answer:")[-1].strip()
+    
+    query = "Chicken Joy"
+
+    if query:
+        docs = get_top_k(query)
+        context = " ".join(docs)
+        st.markdown("**Retrieved Context:**")
+        st.info(context)
+
+        answer = generate_answer(context, query)
+        st.markdown("**Generated Answer:**")
+        st.success(answer)  
+
+    # -----------------------------------------------
+
     filtered_df = df_nutrition[df_nutrition["Food"].isin(detected)]
 
     # Optional: Reorder rows to match detection order

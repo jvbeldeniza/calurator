@@ -3,3 +3,8 @@ opencv-contrib-python-headless
 numpy
 ultralytics
 pandas
+faiss-cpu
+transformers
+sentence-transformers
+torch
+accelerate
