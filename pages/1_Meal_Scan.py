@@ -92,7 +92,7 @@ if img_file:
         D, I = index.search(query_vec, k)
         return [texts[i] for i in I[0]]
     
-    qa_pipeline = pipeline("text-generation", model="sshleifer/tiny-gpt2", max_new_tokens=50)
+    qa_pipeline = pipeline("text-generation", model="EleutherAI/gpt-neo-125M", max_new_tokens=50)
 
     def generate_answer(context, query):
         prompt = f"Context: {context}\nQuestion: What is the calories of {query}?\nAnswer:"
