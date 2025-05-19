@@ -95,7 +95,7 @@ if img_file:
     qa_pipeline = pipeline("text-generation", model="sshleifer/tiny-gpt2", max_new_tokens=50)
 
     def generate_answer(context, query):
-        prompt = f"Context: {context}\nQuestion: {query}\nAnswer:"
+        prompt = f"Context: {context}\nQuestion: What is the calories of {query}?\nAnswer:"
         output = qa_pipeline(prompt, do_sample=False)[0]["generated_text"]
         return output.split("Answer:")[-1].strip()
     
