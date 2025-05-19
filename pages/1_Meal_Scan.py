@@ -92,12 +92,12 @@ if img_file:
         D, I = index.search(query_vec, k)
         return [texts[i] for i in I[0]]
     
-    qa_pipeline = pipeline("text-generation", model="EleutherAI/gpt-neo-125M", max_new_tokens=50)
+    qa_pipeline = pipeline("text2text-generation", model="google/flan-t5-base")
 
     def generate_answer(context, query):
-        prompt = f"Context: {context}\nQuestion: What is the calories of {query}?\nAnswer:"
-        output = qa_pipeline(prompt, do_sample=False)[0]["generated_text"]
-        return output.split("Answer:")[-1].strip()
+        prompt = f"Context: {context}\nQuestion: What is the calorie content of {query}?"
+        output = qa_pipeline(prompt, max_new_tokens=100)
+        return output[0]["generated_text"].strip()
     
     query = "Chicken Joy"
 
