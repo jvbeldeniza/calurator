@@ -167,4 +167,4 @@ if img_file:
         st.session_state.nutrition_data = []
 
     st.dataframe(df_nutrition,hide_index=True)
-    st.session_state.nutrition_data.append(data)
+    st.session_state.nutrition_data.append(df_nutrition.iloc[0])
