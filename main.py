@@ -5,6 +5,10 @@ import plotly.graph_objects as go
 
 
 st.set_page_config(page_title="Food Tracker", page_icon="🍽️")
+
+if "nutrition_data" not in st.session_state:
+    st.session_state.nutrition_data = []
+    
 df = pd.DataFrame(st.session_state.nutrition_data)
 
 st.write("DataFrame columns:", df.columns.tolist())
@@ -67,8 +71,6 @@ if df["Sodium (mg)"].sum()>2000:
 
 # st.dataframe(df, hide_index=True)
 
-if "nutrition_data" not in st.session_state:
-    st.session_state.nutrition_data = []
 
 if st.session_state.nutrition_data:
     st.subheader("History")
