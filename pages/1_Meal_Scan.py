@@ -136,8 +136,9 @@ if img_file:
         return output[0].get("generated_text", output[0].get("text", "")).strip()
 
     query = classes[0]
+    print(query)
     
-    top_docs = get_top_k(detected)
+    top_docs = get_top_k(query)
     answer = generate_answer(top_docs, detected)
     print("Generated Answer:")
     st.success(answer)  
