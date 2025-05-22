@@ -11,7 +11,6 @@ if "nutrition_data" not in st.session_state:
     
 df = pd.DataFrame(st.session_state.nutrition_data)
 
-st.write("DataFrame columns:", df.columns.tolist())
 
 st.title("🍽️ Welcome to the Food Tracker App")
 st.markdown("Use the sidebar to navigate between Meal Scan & Log Food")
