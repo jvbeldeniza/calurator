@@ -25,7 +25,7 @@ def load_model():
     model = YOLO("best.pt")  # Replace with your actual path
     return model
 
-model = load_model()
+y_model = load_model()
 
 # Upload or take a photo
 img_file = st.camera_input("Take a photo") or st.file_uploader("Or upload a meal image", type=["jpg", "jpeg", "png"])
@@ -103,7 +103,7 @@ if img_file:
     image = Image.open(img_file).convert("RGB")
 
     # Run YOLO prediction
-    results = model.predict(image, conf=0.25)
+    results = y_model.predict(image, conf=0.25)
 
     image_drawn = image.copy()
     draw = ImageDraw.Draw(image_drawn)
