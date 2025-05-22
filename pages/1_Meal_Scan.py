@@ -163,7 +163,7 @@ if img_file:
     # -----------------------------------------------
 
 # Extract nutrient, value, and unit
-    match_first_word = re.match(r'^([A-Za-z]+)Calories', class_name+answer)
+    match_first_word = re.match(r'^([A-Za-z]+)Calories', answer)
     first_word = match_first_word.group(1) if match_first_word else None
 
     # Step 2: Extract nutrition info (name, value, unit)
@@ -177,7 +177,7 @@ if img_file:
         data[col_name] = float(value) if '.' in value else int(value)
 
     # Add first word as column
-    data = {"Food": first_word, **data}
+    data = {"Food": class_name, **data}
 
     # Convert to DataFrame
     df_nutrition = pd.DataFrame([data])
