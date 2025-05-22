@@ -135,7 +135,8 @@ if img_file:
         output = pipe(truncated_prompt, max_new_tokens=100)
         return output[0].get("generated_text", output[0].get("text", "")).strip()
 
-    #query = "What are the nutrients in jolly hotdog?"
+    query = classes[0]
+    
     top_docs = get_top_k(detected)
     answer = generate_answer(top_docs, detected)
     print("Generated Answer:")
