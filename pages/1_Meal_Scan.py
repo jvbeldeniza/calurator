@@ -126,7 +126,7 @@ if img_file:
 
     def generate_answer(context_list, query):
         context = "\n".join([entry["text"] for entry in context_list])
-        prompt = f"Context: {context}\nQuestion: {query}"
+        prompt = f"Context: {context}\nQuestion: What are the nutritional facts of {query}?"
 
         # Truncate to fit within model limit
         tokens = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
