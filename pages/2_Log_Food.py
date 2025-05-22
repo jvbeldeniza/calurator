@@ -32,44 +32,57 @@ import pandas as pd
 
 st.title("📝 Log Food")
 
-# Define all column headers
+# Define all the nutrition table columns
 nutrition_columns = [
     "Food", "Calories", "Total Fat (g)", "Saturated Fat (g)", "Trans Fat (g)",
     "Cholesterol (mg)", "Sodium (mg)", "Total Carbohydrates (g)",
     "Dietary Fiber (g)", "Sugars (g)", "Protein (g)"
 ]
 
-# Initialize the session state log
+# Initialize session state
 if "nutrition_data" not in st.session_state:
     st.session_state.nutrition_data = []
 
-# Input form
+# Food input form
 food = st.text_input("Food")
-calories = st.number_input("Calories", min_value=0)
+calories = st.number_input("Calories", min_value=0, step=1)
 
-if st.button("Add Entry"):
+if st.button("➕ Add Entry"):
     if food and calories:
-        # Create entry with only Food and Calories, others as None
-        entry = {col: None for col in nutrition_columns}
-        entry["Food"] = food
-        entry["Calories"] = calories
-
-        st.session_state.nutrition_data.append(entry)
+        # Create a new row with only food and calories, others blank
+        new_entry = {col: None for col in nutrition_columns}
+        new_entry["Food"] = food
+        new_entry["Calories"] = calories
+        st.session_state.nutrition_data.append(new_entry)
         st.success(f"Added {food} ({calories} cal)")
 
-# Create a DataFrame with all entries
-df = pd.DataFrame(st.session_state.nutrition_data)
+# Normalize and validate session data before creating DataFrame
+raw_data = st.session_state.get("nutrition_data", [])
 
-# Ensure all expected columns exist
-for col in nutrition_columns:
-    if col not in df.columns:
-        df[col] = None
+# Ensure the data is a list of dicts
+if isinstance(raw_data, dict):
+    raw_data = [raw_data]
 
-# Editable table
-edited_df = st.data_editor(df[nutrition_columns], num_rows="dynamic", use_container_width=True)
+valid_data = []
+for entry in raw_data:
+    if isinstance(entry, dict):
+        normalized_entry = {col: entry.get(col, None) for col in nutrition_columns}
+        valid_data.append(normalized_entry)
 
-# Save changes
+# Build the editable DataFrame
+df = pd.DataFrame(valid_data)
+
+# Show editable table
+edited_df = st.data_editor(df, num_rows="dynamic", use_container_width=True)
+
+# Save updates
 if st.button("💾 Save Changes"):
-    st.session_state.nutrition_data = edited_df.to_dict(orient="records")
-    st.success("Food log updated!")
+    # Ensure all rows maintain correct format
+    cleaned_data = []
+    for row in edited_df.to_dict(orient="records"):
+        fixed_row = {col: row.get(col, None) for col in nutrition_columns}
+        cleaned_data.append(fixed_row)
+    st.session_state.nutrition_data = cleaned_data
+    st.success("✅ Food log updated!")
+
 
