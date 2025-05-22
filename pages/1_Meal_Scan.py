@@ -146,7 +146,7 @@ if img_file:
     # -----------------------------------------------
 
 # Extract nutrient, value, and unit
-    match_first_word = re.match(r'^([A-Za-z]+)Food', classes[0]+answer)
+    match_first_word = re.match(r'^([A-Za-z]+)Calories', classes[0]+answer)
     first_word = match_first_word.group(1) if match_first_word else None
 
     # Step 2: Extract nutrition info (name, value, unit)
