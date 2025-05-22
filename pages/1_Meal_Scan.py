@@ -178,7 +178,10 @@ if img_file:
 
     # Convert to DataFrame
     df_nutrition = pd.DataFrame([data])
-
+    
+    if "nutrition_data" not in st.session_state:
+        st.session_state.nutrition_data = []
+    
     st.dataframe(df_nutrition)
 
     st.session_state.nutrition_data.append(df_nutrition.iloc[0])
