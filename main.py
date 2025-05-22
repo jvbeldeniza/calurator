@@ -5,7 +5,9 @@ import plotly.graph_objects as go
 
 
 st.set_page_config(page_title="Food Tracker", page_icon="🍽️")
+df = pd.DataFrame(st.session_state.nutrition_data)
 
+st.write("DataFrame columns:", df.columns.tolist())
 
 st.title("🍽️ Welcome to the Food Tracker App")
 st.markdown("Use the sidebar to navigate between Meal Scan & Log Food")
@@ -13,7 +15,6 @@ st.markdown("Use the sidebar to navigate between Meal Scan & Log Food")
 
 st.title("📊 Dashboard")
 
-st.write("DataFrame columns:", df.columns.tolist())
 
 DAILY_CALORIE_GOAL = 2000
 
