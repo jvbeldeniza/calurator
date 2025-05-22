@@ -65,20 +65,21 @@ with open("nutrition_table.csv", newline='', encoding="utf-8") as csvfile:
         for key, label in fields:
             value = row.get(key, "").strip()
             if value:
-                    unit_map = {
-                        "Calories": "kcal",
-                        "Total Fat": "g",
-                        "Saturated Fat": "g",
-                        "Trans Fat": "g",
-                        "Cholesterol": "mg",
-                        "Sodium": "mg",
-                        "Total Carbohydrates": "g",
-                        "Dietary Fiber": "g",
-                        "Sugars": "g",
-                        "Protein": "g"
-                    }
-                    suffix = unit_map.get(label, "")                
-                    answer_parts.append(f"{label} {value} {suffix}")
+                unit_map = {
+                                "Calories": "kcal",
+                                "Total Fat": "g",
+                                "Saturated Fat": "g",
+                                "Trans Fat": "g",
+                                "Cholesterol": "mg",
+                                "Sodium": "mg",
+                                "Total Carbohydrates": "g",
+                                "Dietary Fiber": "g",
+                                "Sugars": "g",
+                                "Protein": "g"
+                            }
+
+                suffix = unit_map.get(label, "")
+                answer_parts.append(f"{label} {value} {suffix}")
             else:
                 answer_parts.append(f"{label} missing")
         answer = ", ".join(answer_parts) + "."
