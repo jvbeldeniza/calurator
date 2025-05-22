@@ -32,40 +32,44 @@ import pandas as pd
 
 st.title("📝 Log Food")
 
-# Initialize session state if not already
+# Define all column headers
+nutrition_columns = [
+    "Food", "Calories", "Total Fat (g)", "Saturated Fat (g)", "Trans Fat (g)",
+    "Cholesterol (mg)", "Sodium (mg)", "Total Carbohydrates (g)",
+    "Dietary Fiber (g)", "Sugars (g)", "Protein (g)"
+]
+
+# Initialize the session state log
 if "nutrition_data" not in st.session_state:
     st.session_state.nutrition_data = []
 
 # Input form
 food = st.text_input("Food")
-calories = st.number_input("Calories", min_value=0, step=1)
+calories = st.number_input("Calories", min_value=0)
 
 if st.button("Add Entry"):
-    if food.strip() and calories is not None:
-        st.session_state.nutrition_data.append({
-            "Food": food.strip(),
-            "Calories": int(calories)
-        })
+    if food and calories:
+        # Create entry with only Food and Calories, others as None
+        entry = {col: None for col in nutrition_columns}
+        entry["Food"] = food
+        entry["Calories"] = calories
+
+        st.session_state.nutrition_data.append(entry)
         st.success(f"Added {food} ({calories} cal)")
-    else:
-        st.warning("Please enter both Food and Calories.")
 
-# Filter out malformed entries before displaying
-valid_entries = [
-    entry for entry in st.session_state.nutrition_data
-    if isinstance(entry, dict)
-    and "Food" in entry and entry["Food"]
-    and "Calories" in entry and isinstance(entry["Calories"], (int, float))
-]
+# Create a DataFrame with all entries
+df = pd.DataFrame(st.session_state.nutrition_data)
 
-# Display editable table
-if valid_entries:
-    df = pd.DataFrame(valid_entries)
-    edited_df = st.data_editor(df, num_rows="dynamic", use_container_width=True)
+# Ensure all expected columns exist
+for col in nutrition_columns:
+    if col not in df.columns:
+        df[col] = None
 
-    # Save edited table back to session state
-    if st.button("💾 Save Changes"):
-        st.session_state.nutrition_data = edited_df.to_dict(orient="records")
-        st.success("Food log updated!")
-else:
-    st.info("No valid entries yet. Add some food items!")
+# Editable table
+edited_df = st.data_editor(df[nutrition_columns], num_rows="dynamic", use_container_width=True)
+
+# Save changes
+if st.button("💾 Save Changes"):
+    st.session_state.nutrition_data = edited_df.to_dict(orient="records")
+    st.success("Food log updated!")
+
