@@ -153,5 +153,5 @@ if img_file:
     if "nutrition_data" not in st.session_state:
         st.session_state.nutrition_data = []
 
-    st.dataframe(df_nutrition)
+    st.dataframe(df_nutrition,hide_index=True)
     st.session_state.nutrition_data.append(df_nutrition.iloc[0])
