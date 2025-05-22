@@ -55,7 +55,7 @@ if st.button("➕ Add Entry"):
         # Create a new row with only food and calories, others blank
         new_entry = {col: None for col in nutrition_columns}
         new_entry["Food"] = food
-        new_entry["Calories"] = calories
+        new_entry["Calories (kcal)"] = calories
         st.session_state.nutrition_data.append(new_entry)
         st.success(f"Added {food} ({calories} cal)")
 
