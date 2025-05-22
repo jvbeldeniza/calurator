@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import ImageDraw, ImageFont
 from ultralytics import YOLO
 from PIL import Image
+import cv2
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
