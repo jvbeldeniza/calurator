@@ -150,12 +150,9 @@ if img_file:
 
     # Get the class name using the ID
     class_name = results[0].names[class_id]
-
-    query = class_name[0]
-    print(query)
     
-    top_docs = get_top_k(query)
-    answer = generate_answer(top_docs, query)
+    top_docs = get_top_k(class_name)
+    answer = generate_answer(top_docs, class_name)
     print("Generated Answer:")
     st.write(class_name)
     st.success(answer)  
