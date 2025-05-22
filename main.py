@@ -64,7 +64,6 @@ st.markdown(f"Consumed: {total_calories}")
 df_raw = pd.DataFrame(st.session_state.nutrition_data)
 
 df_numeric = df_raw.copy()
-df_numeric["Sodium (mg)"] = pd.to_numeric(df_numeric["Sodium (mg)"], errors="coerce")
 
 
 if "Sodium (mg)" in df_numeric.columns:
