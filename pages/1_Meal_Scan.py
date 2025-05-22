@@ -9,6 +9,11 @@ from sentence_transformers import SentenceTransformer
 from transformers import pipeline
 import faiss
 import numpy as np
+import csv
+import faiss
+import numpy as np
+from transformers import AutoTokenizer, pipeline
+import re
 
 st.set_page_config(page_title="📷 Meal Scan", page_icon="📷")
 
@@ -53,86 +58,112 @@ if img_file:
     classes = results[0].names
     detected = [classes[int(cls)] for cls in boxes.cls]
 
-    # Nutrition info
-    nutrition_data = {
-        "Food": ["Chicken", "JFC - Burger Steak", "Broccoli", "Egg", "Apple", "Milk"],
-        "Calories (kcal)": [165, 130, 55, 155, 52, 42],
-        "Protein (g)": [31, 2.7, 3.7, 13, 0.3, 3.4],
-        "Fat (g)": [3.6, 0.3, 0.6, 11, 0.2, 1.0],
-        "Carbs (g)": [0, 28, 11.2, 1.1, 14, 5]
-    }
 
-    df_nutrition = pd.DataFrame(nutrition_data)
-
-    st.write("### 🍽️ Nutrition Info")
-
-    # RAG--------------------------------------------
-
-    embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-
-    # Sample nutrition facts
-    texts = [
-        "Avocado is rich in healthy fats and contains nearly 20 vitamins and minerals.",
-        "Chicken breast is a great source of lean protein.",
-        "Quinoa is a high-protein grain suitable for gluten-free diets.",
-        "Carrots are high in beta-carotene, fiber, and antioxidants.",
-        "Chicken Joy has 620 calories."
+    # -------------------------------
+    # Step 1: Load and format QA pairs
+    # -------------------------------
+    qa_pairs = []
+    fields = [
+        ("Calories (kcal)", "Calories"),
+        ("Total Fat (g)", "Total Fat"),
+        ("Saturated Fat (g)", "Saturated Fat"),
+        ("Trans Fat (g)", "Trans Fat"),
+        ("Cholesterol (mg)", "Cholesterol"),
+        ("Sodium (mg)", "Sodium"),
+        ("Total Carbohydrates (g)", "Total Carbohydrates"),
+        ("Dietary Fiber (g)", "Dietary Fiber"),
+        ("Sugars (g)", "Sugars"),
+        ("Protein (g)", "Protein"),
     ]
 
-    # Generate embeddings
-    embeddings = embedding_model.encode(texts)
+    with open("nutrition_table.csv", newline='', encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            item = row['Menu Item']
+            question = f"What are the nutritional facts of {item}?"
+            answer_parts = []
+            for key, label in fields:
+                value = row.get(key, "").strip()
+                if value:
+                    suffix = "g" if any(x in label for x in ["Fat", "Carbohydrates", "Protein", "Sugars", "Fiber"]) else "mg" if label in ["Sodium", "Cholesterol"] else ""
+                    answer_parts.append(f"{label} {value} {suffix}")
+                else:
+                    answer_parts.append(f"{label} missing")
+            answer = ", ".join(answer_parts) + "."
+            qa_pairs.append({
+                "question": question,
+                "answer": answer,
+                "text": f"Question: {question}\nAnswer: {answer}"
+            })
 
-    # Create FAISS index
-    index = faiss.IndexFlatL2(embeddings.shape[1])
-    index.add(np.array(embeddings))
+    # -------------------------------
+    # Step 2: Embed the QA pairs
+    # -------------------------------
+    model = SentenceTransformer('all-MiniLM-L6-v2')
 
-    # Store docs for retrieval
-    def get_top_k(query, k=2):
-        query_vec = embedding_model.encode([query])
+    embeddings = model.encode([entry["text"] for entry in qa_pairs], convert_to_numpy=True)
+    embedding_dim = embeddings.shape[1]
+
+    # -------------------------------
+    # Step 3: Build and save FAISS index
+    # -------------------------------
+    index = faiss.IndexFlatL2(embedding_dim)
+    index.add(embeddings)
+
+    # -------------------------------
+    # Step 4: Retrieval + Generation
+    # -------------------------------
+
+    # Retrieval function
+    def get_top_k(query, k=5):
+        query_vec = model.encode([query], convert_to_numpy=True)
         D, I = index.search(query_vec, k)
-        return [texts[i] for i in I[0]]
-    
-    qa_pipeline = pipeline("text2text-generation", model="google/flan-t5-base")
+        return [qa_pairs[i] for i in I[0]]
 
-    def generate_answer(context, query):
-        prompt = f"Context: {context}\nQuestion: What is the calorie content of {query}?"
-        output = qa_pipeline(prompt, max_new_tokens=100)
-        return output[0]["generated_text"].strip()
-    
-    query = "Chicken Joy"
+    # Text generation pipeline
+    pipe = pipeline("text2text-generation", model="google/flan-t5-base")
+    tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 
-    if query:
-        docs = get_top_k(query)
-        context = " ".join(docs)
-        st.markdown("**Retrieved Context:**")
-        st.info(context)
+    def generate_answer(context_list, query):
+        context = "\n".join([entry["text"] for entry in context_list])
+        prompt = f"Context: {context}\nQuestion: {query}"
 
-        answer = generate_answer(context, query)
-        st.markdown("**Generated Answer:**")
-        st.success(answer)  
+        # Truncate to fit within model limit
+        tokens = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+        truncated_prompt = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+
+        output = pipe(truncated_prompt, max_new_tokens=100)
+        return output[0].get("generated_text", output[0].get("text", "")).strip()
+
+    #query = "What are the nutrients in jolly hotdog?"
+    top_docs = get_top_k(detected)
+    answer = generate_answer(top_docs, detected)
+    print("Generated Answer:")
+    st.success(answer)  
 
     # -----------------------------------------------
 
-    filtered_df = df_nutrition[df_nutrition["Food"].isin(detected)]
+# Extract nutrient, value, and unit
+    match_first_word = re.match(r'^([A-Za-z]+)Food', classes[0]+answer)
+    first_word = match_first_word.group(1) if match_first_word else None
 
-    # Optional: Reorder rows to match detection order
-    filtered_df["Detection Order"] = filtered_df["Food"].apply(lambda x: detected.index(x))
-    filtered_df = filtered_df.sort_values("Detection Order").drop(columns="Detection Order")
+    # Step 2: Extract nutrition info (name, value, unit)
+    pattern = r'([A-Za-z ]+?)\s+([\d.]+)\s*(mg|g|kcal)?'
+    nutrients = re.findall(pattern, classes[0]+answer)
 
-    if 'food_log' not in st.session_state:
-        st.session_state.food_log = []
+    # Build dict with units in column names
+    data = {}
+    for name, value, unit in nutrients:
+        col_name = f"{name.strip()} ({unit})" if unit else name.strip()
+        data[col_name] = float(value) if '.' in value else int(value)
 
-    # Editable table
-    edited_df = st.data_editor(
-        filtered_df.set_index("Food"),
-        num_rows="dynamic",
-        use_container_width=True
-    )
+    # Add first word as column
+    data = {"Food": first_word, **data}
 
-    # Update session_state food_log after edits
-    
-    for _, row in edited_df.reset_index().iterrows():
-        entry = {"Food": row["Food"], "Calories": int(row["Calories (kcal)"])}
-        st.session_state.food_log.append(entry)
+    # Convert to DataFrame
+    df_nutrition = pd.DataFrame([data])
+
+    st.dataframe(df_nutrition)
+
 
     
