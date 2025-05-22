@@ -64,7 +64,7 @@ st.markdown(f"Consumed: {total_calories}")
 
 if "Sodium (mg)" in df.columns:
     # Safely convert to numeric values, coercing errors to NaN
-    df["Sodium (mg)"] = pd.to_numeric(df["Sodium (mg)"], errors="coerce")
+    #df["Sodium (mg)"] = pd.to_numeric(df["Sodium (mg)"], errors="coerce")
     
     sodium_total = df["Sodium (mg)"].sum(skipna=True)
 
