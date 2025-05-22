@@ -68,12 +68,15 @@ st.write("Sodium values:", df["Sodium (mg)"])
 st.write("Sodium total:", df["Sodium (mg)"].sum())
 
 if "Sodium (mg)" in df.columns:
-    try:
-        sodium_total = pd.to_numeric(df["Sodium (mg)"], errors="coerce").sum()
-        if sodium_total > 2000:
-            st.warning("Reduce sodium intake, recommended intake has been exceeded.")
-    except Exception as e:
-        st.error(f"Error processing sodium data: {e}")
+    # Safely convert to numeric values, coercing errors to NaN
+    df["Sodium (mg)"] = pd.to_numeric(df["Sodium (mg)"], errors="coerce")
+    
+    sodium_total = df["Sodium (mg)"].sum(skipna=True)
+
+    st.write("Sodium total:", sodium_total)
+
+    if sodium_total > 2000:
+        st.warning("Reduce sodium intake, recommended intake has been exceeded.")
 
 
 
