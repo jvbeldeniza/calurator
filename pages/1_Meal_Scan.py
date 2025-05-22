@@ -153,12 +153,12 @@ if img_file:
     # -----------------------------------------------
 
 # Extract nutrient, value, and unit
-    match_first_word = re.match(r'^([A-Za-z]+)Calories', classes[0]+answer)
+    match_first_word = re.match(r'^([A-Za-z]+)Calories', answer)
     first_word = match_first_word.group(1) if match_first_word else None
 
     # Step 2: Extract nutrition info (name, value, unit)
     pattern = r'([A-Za-z ]+?)\s+([\d.]+)\s*(mg|g|kcal)?'
-    nutrients = re.findall(pattern, classes[0]+answer)
+    nutrients = re.findall(pattern, answer)
 
     # Build dict with units in column names
     data = {}
@@ -173,7 +173,7 @@ if img_file:
     df_nutrition = pd.DataFrame([data])
 
     st.dataframe(df_nutrition)
-    
+
     st.session_state.nutrition_data.append(df_nutrition.iloc[0])
 
 
