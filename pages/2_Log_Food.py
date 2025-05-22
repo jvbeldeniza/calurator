@@ -43,6 +43,9 @@ nutrition_columns = [
 if "nutrition_data" not in st.session_state:
     st.session_state.nutrition_data = []
 
+# Normalize and validate session data before creating DataFrame
+raw_data = st.session_state.get("nutrition_data", [])
+
 # Food input form
 food = st.text_input("Food")
 calories = st.number_input("Calories", min_value=0, step=1)
@@ -56,8 +59,7 @@ if st.button("➕ Add Entry"):
         st.session_state.nutrition_data.append(new_entry)
         st.success(f"Added {food} ({calories} cal)")
 
-# Normalize and validate session data before creating DataFrame
-raw_data = st.session_state.get("nutrition_data", [])
+
 
 # Ensure the data is a list of dicts
 if isinstance(raw_data, dict):
