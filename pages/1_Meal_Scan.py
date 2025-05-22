@@ -19,7 +19,7 @@ st.title("📷 Meal Detection")
 
 @st.cache_resource
 def load_yolo_model():
-    return YOLO("best.pt")
+    return YOLO("bestv2.pt")
 
 @st.cache_resource
 def load_embedding_model():
