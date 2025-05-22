@@ -95,3 +95,4 @@ if st.session_state.nutrition_data:
     st.subheader("Food Log")
     df_all = pd.DataFrame(st.session_state.nutrition_data)
     edited_df = st.data_editor(df_all, num_rows="dynamic", use_container_width=True)
+    st.session_state.nutrition_data = edited_df.to_dict(orient="records")
