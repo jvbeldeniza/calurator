@@ -155,7 +155,7 @@ if img_file:
     print(query)
     
     top_docs = get_top_k(query)
-    answer = generate_answer(top_docs, detected)
+    answer = generate_answer(top_docs, query)
     print("Generated Answer:")
     st.write(class_name)
     st.success(answer)  
