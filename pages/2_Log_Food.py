@@ -34,7 +34,7 @@ st.title("📝 Log Food")
 
 # Define all the nutrition table columns
 nutrition_columns = [
-    "Food", "Calories", "Total Fat (g)", "Saturated Fat (g)", "Trans Fat (g)",
+    "Food", "Calories (kcal)", "Total Fat (g)", "Saturated Fat (g)", "Trans Fat (g)",
     "Cholesterol (mg)", "Sodium (mg)", "Total Carbohydrates (g)",
     "Dietary Fiber (g)", "Sugars (g)", "Protein (g)"
 ]
