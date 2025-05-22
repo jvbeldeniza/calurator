@@ -55,6 +55,14 @@ st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
 st.markdown(f"Consumed: {total_calories}")
 
-st.markdown("History")
+# st.markdown("History")
 
-st.dataframe(df, hide_index=True)
+# st.dataframe(df, hide_index=True)
+
+if "nutrition_data" not in st.session_state:
+    st.session_state.nutrition_data = []
+
+if st.session_state.nutrition_data:
+    st.subheader("📊 All Scanned Meals Nutritional Data")
+    df_all = pd.DataFrame(st.session_state.nutrition_data)
+    st.dataframe(df_all,hide_index=True)

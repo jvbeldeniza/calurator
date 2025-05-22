@@ -173,6 +173,8 @@ if img_file:
     df_nutrition = pd.DataFrame([data])
 
     st.dataframe(df_nutrition)
+    
+    st.session_state.nutrition_data.append(df_nutrition.iloc[0])
 
 
     
