@@ -157,7 +157,7 @@ if img_file:
 
     # Step 2: Extract nutrition info (name, value, unit)
     pattern = r'([A-Za-z ]+?)\s+([\d.]+)\s*(mg|g|kcal)?'
-    nutrients = re.findall(pattern, answer)
+    nutrients = re.findall(pattern, classes[0]+answer)
 
     # Build dict with units in column names
     data = {}
