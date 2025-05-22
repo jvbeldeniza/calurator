@@ -62,11 +62,6 @@ st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
 st.markdown(f"Consumed: {total_calories}")
 
-st.write("Columns:", df.columns.tolist())
-st.write("Sample data:", df.head())
-st.write("Sodium values:", df["Sodium (mg)"])
-st.write("Sodium total:", df["Sodium (mg)"].sum())
-
 if "Sodium (mg)" in df.columns:
     # Safely convert to numeric values, coercing errors to NaN
     df["Sodium (mg)"] = pd.to_numeric(df["Sodium (mg)"], errors="coerce")
