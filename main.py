@@ -62,7 +62,7 @@ st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
 st.markdown(f"Consumed: {total_calories}")
 
-if df["Sodium (mg)"].sum()>2000:
+if df[6].sum()>2000:
     st.warning("Reduce sodium intake, recommended intake has be exceeded. ")
 
 
