@@ -31,6 +31,73 @@ model = load_model()
 img_file = st.camera_input("Take a photo") or st.file_uploader("Or upload a meal image", type=["jpg", "jpeg", "png"])
 
 
+# -------------------------------
+# Step 1: Load and format QA pairs
+# -------------------------------
+qa_pairs = []
+fields = [
+    ("Calories (kcal)", "Calories"),
+    ("Total Fat (g)", "Total Fat"),
+    ("Saturated Fat (g)", "Saturated Fat"),
+    ("Trans Fat (g)", "Trans Fat"),
+    ("Cholesterol (mg)", "Cholesterol"),
+    ("Sodium (mg)", "Sodium"),
+    ("Total Carbohydrates (g)", "Total Carbohydrates"),
+    ("Dietary Fiber (g)", "Dietary Fiber"),
+    ("Sugars (g)", "Sugars"),
+    ("Protein (g)", "Protein"),
+]
+
+with open("nutrition_table.csv", newline='', encoding="utf-8") as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+        item = row['Menu Item']
+        question = f"What are the nutritional facts of {item}?"
+        answer_parts = []
+        for key, label in fields:
+            value = row.get(key, "").strip()
+            if value:
+                suffix = "g" if any(x in label for x in ["Fat", "Carbohydrates", "Protein", "Sugars", "Fiber"]) else "mg" if label in ["Sodium", "Cholesterol"] else ""
+                answer_parts.append(f"{label} {value} {suffix}")
+            else:
+                answer_parts.append(f"{label} missing")
+        answer = ", ".join(answer_parts) + "."
+        qa_pairs.append({
+            "question": question,
+            "answer": answer,
+            "text": f"Question: {question}\nAnswer: {answer}"
+        })
+
+# -------------------------------
+# Step 2: Embed the QA pairs
+# -------------------------------
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+embeddings = model.encode([entry["text"] for entry in qa_pairs], convert_to_numpy=True)
+embedding_dim = embeddings.shape[1]
+
+# Retrieval function
+def get_top_k(query, k=5):
+    query_vec = model.encode([query], convert_to_numpy=True)
+    D, I = index.search(query_vec, k)
+    return [qa_pairs[i] for i in I[0]]
+
+def generate_answer(context_list, query):
+    context = "\n".join([entry["text"] for entry in context_list])
+    prompt = f"Context: {context}\nQuestion: What are the nutritional facts of {query}?"
+
+    # Truncate to fit within model limit
+    tokens = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
+    truncated_prompt = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
+
+    output = pipe(truncated_prompt, max_new_tokens=100)
+    return output[0].get("generated_text", output[0].get("text", "")).strip()
+
+# -------------------------------
+# Step 3: Build and save FAISS index
+# -------------------------------
+index = faiss.IndexFlatL2(embedding_dim)
+index.add(embeddings)
 
 if img_file:
     image = Image.open(img_file).convert("RGB")
@@ -61,31 +128,18 @@ if img_file:
     detected = [classes[int(cls)] for cls in boxes.cls]
 
 
-    
+
     # -------------------------------
     # Step 4: Retrieval + Generation
     # -------------------------------
 
-    # Retrieval function
-    def get_top_k(query, k=5):
-        query_vec = model.encode([query], convert_to_numpy=True)
-        D, I = index.search(query_vec, k)
-        return [qa_pairs[i] for i in I[0]]
+
 
     # Text generation pipeline
     pipe = pipeline("text2text-generation", model="google/flan-t5-base")
     tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 
-    def generate_answer(context_list, query):
-        context = "\n".join([entry["text"] for entry in context_list])
-        prompt = f"Context: {context}\nQuestion: What are the nutritional facts of {query}?"
 
-        # Truncate to fit within model limit
-        tokens = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=512)
-        truncated_prompt = tokenizer.decode(tokens["input_ids"][0], skip_special_tokens=True)
-
-        output = pipe(truncated_prompt, max_new_tokens=100)
-        return output[0].get("generated_text", output[0].get("text", "")).strip()
 
     query = classes[0]
     print(query)
