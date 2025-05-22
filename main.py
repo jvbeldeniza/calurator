@@ -17,7 +17,7 @@ DAILY_CALORIE_GOAL = 2000
 
 # Load logged data
 df = pd.DataFrame(st.session_state.get("nutrition_data", []))
-total_calories = df["Calories"].sum() if not df.empty else 0
+total_calories = df["Calories (kcal)"].sum() if not df.empty else 0
 remaining = max(0, DAILY_CALORIE_GOAL - total_calories)
 
 # Calculate progress percentage
