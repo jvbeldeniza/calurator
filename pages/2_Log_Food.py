@@ -92,6 +92,7 @@ if "nutrition_data" not in st.session_state:
     st.session_state.nutrition_data = []
 
 if st.session_state.nutrition_data:
-    st.subheader("History")
+    st.subheader("Food Log")
     df_all = pd.DataFrame(st.session_state.nutrition_data)
-    st.dataframe(df_all,hide_index=True)
+    edited_df = st.data_editor(df_all, num_rows="dynamic", use_container_width=True)
+    st.dataframe(edited_df,hide_index=True)
