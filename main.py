@@ -16,7 +16,7 @@ st.title("📊 Dashboard")
 DAILY_CALORIE_GOAL = 2000
 
 # Load logged data
-df = pd.DataFrame(st.session_state.get("food_log", []))
+df = pd.DataFrame(st.session_state.get("nutrition_data", []))
 total_calories = df["Calories"].sum() if not df.empty else 0
 remaining = max(0, DAILY_CALORIE_GOAL - total_calories)
 
@@ -63,6 +63,6 @@ if "nutrition_data" not in st.session_state:
     st.session_state.nutrition_data = []
 
 if st.session_state.nutrition_data:
-    st.subheader("📊 All Scanned Meals Nutritional Data")
+    st.subheader("History")
     df_all = pd.DataFrame(st.session_state.nutrition_data)
     st.dataframe(df_all,hide_index=True)
