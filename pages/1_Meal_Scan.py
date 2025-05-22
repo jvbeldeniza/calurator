@@ -140,20 +140,30 @@ if img_file:
     tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-base")
 
 
+    confidences = results[0].boxes.conf.cpu().numpy()
 
-    query = classes[0]
+    # Get the index of the highest confidence
+    max_conf_idx = confidences.argmax()
+
+    # Get the class index for the most confident detection
+    class_id = int(results[0].boxes.cls[max_conf_idx])
+
+    # Get the class name using the ID
+    class_name = results[0].names[class_id]
+
+    query = class_name[0]
     print(query)
     
     top_docs = get_top_k(query)
     answer = generate_answer(top_docs, detected)
     print("Generated Answer:")
-    st.write(classes[0])
+    st.write(class_name)
     st.success(answer)  
 
     # -----------------------------------------------
 
 # Extract nutrient, value, and unit
-    match_first_word = re.match(r'^([A-Za-z]+)Calories', classes[0]+answer)
+    match_first_word = re.match(r'^([A-Za-z]+)Calories', class_name+answer)
     first_word = match_first_word.group(1) if match_first_word else None
 
     # Step 2: Extract nutrition info (name, value, unit)
