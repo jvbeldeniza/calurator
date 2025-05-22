@@ -55,6 +55,11 @@ st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
 st.markdown(f"Consumed: {total_calories}")
 
+if df["Sodium (mg)"].sum()>2000:
+    st.warning("Reduce sodium intake, recommended intake has be exceeded. ")
+
+
+
 # st.markdown("History")
 
 # st.dataframe(df, hide_index=True)
@@ -66,3 +71,4 @@ if st.session_state.nutrition_data:
     st.subheader("History")
     df_all = pd.DataFrame(st.session_state.nutrition_data)
     st.dataframe(df_all,hide_index=True)
+
