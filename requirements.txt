@@ -1,5 +1,5 @@
 plotly
-opencv-contrib-python-headless
+opencv-contrib-python
 numpy
 ultralytics
 pandas
