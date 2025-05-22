@@ -30,6 +30,8 @@ model = load_model()
 # Upload or take a photo
 img_file = st.camera_input("Take a photo") or st.file_uploader("Or upload a meal image", type=["jpg", "jpeg", "png"])
 
+
+
 if img_file:
     image = Image.open(img_file).convert("RGB")
 
@@ -59,57 +61,7 @@ if img_file:
     detected = [classes[int(cls)] for cls in boxes.cls]
 
 
-    # -------------------------------
-    # Step 1: Load and format QA pairs
-    # -------------------------------
-    qa_pairs = []
-    fields = [
-        ("Calories (kcal)", "Calories"),
-        ("Total Fat (g)", "Total Fat"),
-        ("Saturated Fat (g)", "Saturated Fat"),
-        ("Trans Fat (g)", "Trans Fat"),
-        ("Cholesterol (mg)", "Cholesterol"),
-        ("Sodium (mg)", "Sodium"),
-        ("Total Carbohydrates (g)", "Total Carbohydrates"),
-        ("Dietary Fiber (g)", "Dietary Fiber"),
-        ("Sugars (g)", "Sugars"),
-        ("Protein (g)", "Protein"),
-    ]
-
-    with open("nutrition_table.csv", newline='', encoding="utf-8") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            item = row['Menu Item']
-            question = f"What are the nutritional facts of {item}?"
-            answer_parts = []
-            for key, label in fields:
-                value = row.get(key, "").strip()
-                if value:
-                    suffix = "g" if any(x in label for x in ["Fat", "Carbohydrates", "Protein", "Sugars", "Fiber"]) else "mg" if label in ["Sodium", "Cholesterol"] else ""
-                    answer_parts.append(f"{label} {value} {suffix}")
-                else:
-                    answer_parts.append(f"{label} missing")
-            answer = ", ".join(answer_parts) + "."
-            qa_pairs.append({
-                "question": question,
-                "answer": answer,
-                "text": f"Question: {question}\nAnswer: {answer}"
-            })
-
-    # -------------------------------
-    # Step 2: Embed the QA pairs
-    # -------------------------------
-    model = SentenceTransformer('all-MiniLM-L6-v2')
-
-    embeddings = model.encode([entry["text"] for entry in qa_pairs], convert_to_numpy=True)
-    embedding_dim = embeddings.shape[1]
-
-    # -------------------------------
-    # Step 3: Build and save FAISS index
-    # -------------------------------
-    index = faiss.IndexFlatL2(embedding_dim)
-    index.add(embeddings)
-
+    
     # -------------------------------
     # Step 4: Retrieval + Generation
     # -------------------------------
