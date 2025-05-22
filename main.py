@@ -62,8 +62,18 @@ st.plotly_chart(fig, use_container_width=True)
 st.markdown(f"Base Goal: {DAILY_CALORIE_GOAL}")
 st.markdown(f"Consumed: {total_calories}")
 
-if df[6].sum()>2000:
-    st.warning("Reduce sodium intake, recommended intake has be exceeded. ")
+st.write("Columns:", df.columns.tolist())
+st.write("Sample data:", df.head())
+st.write("Sodium values:", df["Sodium (mg)"])
+st.write("Sodium total:", df["Sodium (mg)"].sum())
+
+if "Sodium (mg)" in df.columns:
+    try:
+        sodium_total = pd.to_numeric(df["Sodium (mg)"], errors="coerce").sum()
+        if sodium_total > 2000:
+            st.warning("Reduce sodium intake, recommended intake has been exceeded.")
+    except Exception as e:
+        st.error(f"Error processing sodium data: {e}")
 
 
 
