@@ -75,7 +75,7 @@ if "Sodium (mg)" in df_numeric.columns:
     st.write("Sodium total:", sodium_total)
 
     if sodium_total > 2000:
-        st.warning("Reduce sodium intake, recommended intake has been exceeded.")
+        st.warning("Please reduce sodium intake, as recommended daily intake has been exceeded. Try to eat fresh fruits and vegetables, instead")
 
 
 
